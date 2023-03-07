@@ -52,7 +52,9 @@ export const deleteEmployeeRequest = createAsyncThunk(
 const initialState = {
   data: [],
   loading: false,
-  editSuccess: false
+  addSuccess: false,
+  editSuccess: false,
+  deleteSuccess: false,
 };
 
 const employeeSlice = createSlice({
@@ -71,42 +73,33 @@ const employeeSlice = createSlice({
     },
 
     [editEmployeeRequest.pending]: (state) => {
-      state.loading = true;
       state.editSuccess = false;
     },
     [editEmployeeRequest.rejected]: (state, action) => {
-      state.loading = false;
       state.editSuccess = false;
     },
     [editEmployeeRequest.fulfilled]: (state, action) => {
-      state.data = action?.payload || [];
-      state.loading = false;
       state.editSuccess = true;
     },
 
     [addEmployeeRequest.pending]: (state) => {
-      state.loading = true;
-      state.editSuccess = false;
+      state.addSuccess = false;
     },
     [addEmployeeRequest.rejected]: (state, action) => {
-      state.loading = false;
-      state.editSuccess = false;
+      state.addSuccess = false;
     },
     [addEmployeeRequest.fulfilled]: (state, action) => {
-      state.data = action?.payload || [];
-      state.loading = false;
-      state.editSuccess = true;
+      state.addSuccess = true;
     },
 
     [deleteEmployeeRequest.pending]: (state) => {
-      state.loading = true;
+      state.deleteSuccess = false;
     },
     [deleteEmployeeRequest.rejected]: (state, action) => {
-      state.loading = false;
+      state.deleteSuccess = false;
     },
     [deleteEmployeeRequest.fulfilled]: (state, action) => {
-      state.data = action?.payload || [];
-      state.loading = false;
+      state.deleteSuccess = true;
     },
   },
 });

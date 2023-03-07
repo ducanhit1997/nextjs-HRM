@@ -6,14 +6,20 @@ import Button from 'react-bootstrap/Button';
 import ModalLogin from "../modals/modalLogin";
 import Link from "next/link";
 import { useRouter } from 'next/router'
+import jwt_decode from 'jwt-decode';
 
 function Navbar() {
   const [showModalNewUser, setShowModalNewUser] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
+  const [userName, setUserName] = useState('');
   const router = useRouter();
 
   useEffect(() => {
     const hasToken = Cookies.get('HRM_TOKEN')
+    if (hasToken) {
+      const tokenPayload = jwt_decode(hasToken);
+      setUserName(tokenPayload.username)
+    }
     setIsLogin(hasToken)
   }, [])
 
@@ -24,23 +30,27 @@ function Navbar() {
   }
 
   return (
-    <div className='container'>
-      <Nav className="justify-content-end align-items-center mt-2" activeKey="/home">
+    <div>
+      <Nav className="container mt-2 w-100" activeKey="/home">
+        <Nav.Item className="float-start">
+          <Nav.Link eventKey="1" href="/">
+            Home
+          </Nav.Link>
+        </Nav.Item>
         {!isLogin &&
-          <Nav.Item>
+          <Nav.Item className="ms-auto">
             <Button variant="outline-primary" onClick={() => setShowModalNewUser(true)}>Login</Button>
           </Nav.Item>
         }
         {isLogin &&
-          <Nav.Item>
+          <Nav.Item className="ms-auto">
             <Dropdown align="end">
               <Dropdown.Toggle variant="" id="dropdown-basic">
-                PDA
+                {userName}
               </Dropdown.Toggle>
-
               <Dropdown.Menu>
                 <Link href="/profile">
-                  <Dropdown.Item href="#/action-1">Manage Account</Dropdown.Item>
+                  <Dropdown.Item href="#/action-1">Profile</Dropdown.Item>
                 </Link>
                 <Dropdown.Item onClick={onLogout}>Logout</Dropdown.Item>
               </Dropdown.Menu>

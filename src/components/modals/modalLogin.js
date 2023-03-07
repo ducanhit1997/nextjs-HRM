@@ -32,12 +32,12 @@ function ModalLogin(props) {
         setInValidAccount(false)
         props.setShowModalNewUser(false)
       })
+      .then(() => window.location.reload())
       .catch((error) => {
         setInValidAccount(true);
       })
       .finally(() => {
         setLoading(false);
-        window.location.reload()
       });
   }
   return (

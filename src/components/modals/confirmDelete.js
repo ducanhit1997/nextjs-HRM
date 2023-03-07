@@ -1,15 +1,27 @@
 import Modal from 'react-bootstrap/Modal';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { deleteEmployeeRequest } from '../../store/employeeReducer';
-import { Button } from 'antd';
+import { Button, notification } from 'antd';
+import { useEffect } from 'react';
 
 function ConfirmDeleteModal(props) {
-  const { id, name, setShowModalConfirm } = props;
+  const { id, name, setShowModalConfirm, setUpdateOrSaveSuccess } = props;
   const dispatch = useDispatch();
+  const { deleteSuccess } = useSelector((state) => state.employeeReducer);
 
   const onDeleteEmployee = () => {
-   dispatch(deleteEmployeeRequest(id));
+    dispatch(deleteEmployeeRequest(id));
   }
+
+  useEffect(() => {
+    if (deleteSuccess) {
+      notification.open({
+        message: 'Delete employee success!',
+      });
+      setUpdateOrSaveSuccess(true);
+      setShowModalConfirm(false);
+    }
+  }, [deleteSuccess])
 
   return (
     <Modal
@@ -21,7 +33,7 @@ function ConfirmDeleteModal(props) {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Button onClick={onDeleteEmployee}>
+        <Button onClick={onDeleteEmployee} danger type="primary">
           Yes
         </Button>
         <Button onClick={() => setShowModalConfirm(false)} className="ms-2">

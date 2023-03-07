@@ -1,16 +1,16 @@
 import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { editEmployeeRequest } from '../../store/employeeReducer';
-import { addEmployee } from '../../services/api/employee';
+import { useDispatch, useSelector } from 'react-redux';
+import { addEmployeeRequest, editEmployeeRequest } from '../../store/employeeReducer';
+import { Button, notification } from 'antd';
 
 function ModalEmployee(props) {
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
-  const { data } = props;
+  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm();
+  const { data, setShowModalEmployee, setUpdateOrSaveSuccess, type } = props;
   const dispatch = useDispatch();
+  const { addSuccess ,editSuccess } = useSelector((state) => state.employeeReducer);
 
   const onSubmit = values => {
     const payloadAddNew = {
@@ -22,14 +22,37 @@ function ModalEmployee(props) {
       id: data?.id,
       ...payloadAddNew
     }
-    data ? dispatch(editEmployeeRequest(payloadUpdate)) : dispatch(addEmployee(payloadUpdate));
+    type === 'edit' ? dispatch(editEmployeeRequest(payloadUpdate)) : dispatch(addEmployeeRequest(payloadAddNew));
+    setShowModalEmployee(false);
   }
 
   useEffect(() => {
-    if(data) {
+    if (addSuccess) {
+      notification.open({
+        message: 'Add employee success!',
+      });
+      setUpdateOrSaveSuccess(true);
+    }
+  }, [addSuccess])
+
+  useEffect(() => {
+    if (editSuccess) {
+      notification.open({
+        message: 'Edit employee success!',
+      });
+      setUpdateOrSaveSuccess(true);
+    }
+  }, [editSuccess])
+
+  useEffect(() => {
+    if (type === 'edit') {
       setValue('name', data.name);
       setValue('address', data.address);
       setValue('phoneNumber', data.phoneNumber);
+    } else {
+      setValue('name', null);
+      setValue('address', null);
+      setValue('phoneNumber', null);
     }
   }, [data])
 
@@ -39,7 +62,7 @@ function ModalEmployee(props) {
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          {data ? 'Edit Employee' : 'Add Employee'}
+          {type === 'edit' ? 'Edit Employee' : 'Add Employee'}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -73,7 +96,7 @@ function ModalEmployee(props) {
           <Form.Group className="mb-2">
             <Form.Label>Phone Number</Form.Label>
             <Form.Control
-              type="text"
+              type="number"
               {...register("phoneNumber", { required: true })}
               required
             />
@@ -83,7 +106,7 @@ function ModalEmployee(props) {
               </small>
             )}
           </Form.Group>
-          <Button variant="primary" type="submit">
+          <Button type="primary" htmlType='submit'>
             Save
           </Button>
         </Form>

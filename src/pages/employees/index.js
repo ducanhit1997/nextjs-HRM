@@ -2,25 +2,37 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Layout from "../../components/layout"
 import { getListEmployeeRequest } from "../../store/employeeReducer";
-import { Button, Space, Table, Alert } from 'antd';
+import { Button, Space, Table, Alert, Spin } from 'antd';
 import ModalEmployee from "../../components/modals/modalEmployee";
 import ConfirmDeleteModal from "../../components/modals/confirmDelete";
 import Cookies from "js-cookie";
 
 function Employees(props) {
   const dispatch = useDispatch();
-  const { data } = useSelector((state) => state.employeeReducer);
+  const { data, loading } = useSelector((state) => state.employeeReducer);
   const [showModalEmployee, setShowModalEmployee] = useState(false);
   const [showModalConfirm, setShowModalConfirm] = useState(false);
   const [recordData, setRecordData] = useState();
-  const hasToken = Cookies.get('HRM_TOKEN')
+  const [hasToken, setHasToken] = useState();
+  const [updateOrSaveSuccess, setUpdateOrSaveSuccess] = useState(false)
+  const [typeModal, setTypeModal] = useState()
 
   useEffect(() => {
     dispatch(getListEmployeeRequest());
+    setHasToken(Cookies.get('HRM_TOKEN'))
   }, []);
+
+  useEffect(() => {
+    if (updateOrSaveSuccess) {
+      dispatch(getListEmployeeRequest());
+      setHasToken(Cookies.get('HRM_TOKEN'))
+      setUpdateOrSaveSuccess(false);
+    }
+  }, [updateOrSaveSuccess]);
 
   const openModalNewOrEdit = (record) => {
     setRecordData(record);
+    setTypeModal(!record ? 'add' : 'edit')
     setShowModalEmployee(true);
   }
 
@@ -59,15 +71,20 @@ function Employees(props) {
 
   return (
     <Layout>
-      <div className="container">
+      <div className="container mt-5">
         {hasToken ?
           <>
-            <Button onClick={() => openModalNewOrEdit()}>Add new user</Button>
-            <Table columns={columns} dataSource={data} className="mt-3" />
+            <Button onClick={() => openModalNewOrEdit(null)}>Add new user</Button>
+            <Spin spinning={loading}>
+              <Table columns={columns} dataSource={data || []} className="mt-3" pagination={{ pageSize: 5 }} />
+            </Spin>
             <ModalEmployee
               show={showModalEmployee}
               onHide={() => setShowModalEmployee(false)}
               data={recordData}
+              type={typeModal}
+              setShowModalEmployee={setShowModalEmployee}
+              setUpdateOrSaveSuccess={setUpdateOrSaveSuccess}
             />
             <ConfirmDeleteModal
               show={showModalConfirm}
@@ -75,10 +92,11 @@ function Employees(props) {
               id={recordData?.id}
               name={recordData?.name}
               setShowModalConfirm={setShowModalConfirm}
+              setUpdateOrSaveSuccess={setUpdateOrSaveSuccess}
             />
           </> :
           <Alert message="Bạn cần đăng nhập để có thể xem" type="warning" className="mt-5" />
-          }
+        }
       </div>
     </Layout>
   )

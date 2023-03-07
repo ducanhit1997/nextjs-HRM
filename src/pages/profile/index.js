@@ -1,6 +1,6 @@
 import Layout from "../../components/layout";
 import Card from 'react-bootstrap/Card';
-import { Alert, Button, Form, Spinner } from "react-bootstrap";
+import { Alert, Form, } from "react-bootstrap";
 import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import { API_URL } from '../../const/index'
@@ -8,6 +8,7 @@ import axios from "axios";
 import jwt_decode from 'jwt-decode';
 
 import Cookies from "js-cookie";
+import { Button, notification } from "antd";
 
 function Profile(props) {
   const { register, handleSubmit, clearErrors, setValue, formState: { errors } } = useForm();
@@ -25,18 +26,21 @@ function Profile(props) {
     }
     setLoading(true);
     axios.put(`${API_URL}/users/${tokenData.userId}`, payload)
-    .then((response) => {
-      setInValidAccount(false)
-      clearErrors()
-    })
-    .catch((error) => {
-      setInValidAccount(true);
-    })
-    .finally(() => {
-      setLoading(false);
-    });
+      .then((response) => {
+        setInValidAccount(false)
+        clearErrors()
+      })
+      .catch((error) => {
+        setInValidAccount(true);
+      })
+      .finally(() => {
+        setLoading(false);
+        notification.open({
+          message: 'Update user info success!',
+        });
+      });
   }
-  
+
   const getUserDetail = (id) => {
     axios.get(`${API_URL}/users/${id}`)
       .then((response) => {
@@ -61,19 +65,18 @@ function Profile(props) {
   }, [])
 
   useEffect(() => {
-    if(userData) {
+    if (userData) {
       setValue('username', userData.username);
       setValue('address', userData.address);
       setValue('phoneNumber', userData.phoneNumber);
     }
   }, [userData])
 
-
   return (
     <Layout>
       <div className="container">
-        <Card>
-          <Card.Title>Thông tin cá nhân</Card.Title>
+        <Card className="p-2">
+          <Card.Title className="text-center">Thông tin cá nhân</Card.Title>
           <Card.Body>
             <Form noValidate onSubmit={handleSubmit(onSubmit)}>
               {inValidAccount &&
@@ -119,16 +122,7 @@ function Profile(props) {
                 )}
               </Form.Group>
 
-              <Button variant="primary" type="submit" disabled={loading}>
-                {loading &&
-                  <Spinner
-                    as="span"
-                    animation="border"
-                    size="sm"
-                    role="status"
-                    aria-hidden="true"
-                  />
-                }
+              <Button type="primary" htmlType="submit" disabled={loading} loading={loading}>
                 Update
               </Button>
             </Form>
