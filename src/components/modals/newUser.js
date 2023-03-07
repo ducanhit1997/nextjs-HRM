@@ -2,14 +2,38 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie'
+import { useRouter } from 'next/router'
+import { Alert } from 'react-bootstrap';
+import { Spinner } from 'react-bootstrap';
 
 function NewUserModal(props) {
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const router = useRouter();
+  const [inValidAccount, setInValidAccount] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = data => {
-    console.log(data)
+    const payload = {
+      username: data.username,
+      password: data.password
+    }
+    setLoading(true);
+    axios.post(`http://localhost:3000/api/login`, payload)
+      .then((response) => {
+        Cookies.set('HRM_TOKEN', response.data.token)
+        setInValidAccount(false)
+        window.location.reload();
+      })
+      .catch((error) => {
+        setInValidAccount(true);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }
-console.log(errors.username)
   return (
     <Modal
       {...props}
@@ -21,6 +45,11 @@ console.log(errors.username)
       </Modal.Header>
       <Modal.Body>
         <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+          {inValidAccount &&
+            <Alert variant="danger">
+              Invalid account
+            </Alert>
+          }
           <Form.Group className="mb-2">
             <Form.Label>User name</Form.Label>
             <Form.Control

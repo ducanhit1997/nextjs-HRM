@@ -1,23 +1,37 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import jwt from 'jsonwebtoken';
+import axios from 'axios';
+import { API_URL } from '../../const/index'
 
 type Data = {
   message: string;
 };
 
-export default function handler(
+const getListUser = () => {
+  return axios.get(`${API_URL}/users`)
+    .then(function (response) {
+      return response.data; // return the data property of the response
+    })
+    .catch(function (error) {
+      return []
+    });
+}
+
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  console.log("req", req);
   if (req.method === "POST") {
     const { username, password } = req.body;
-    if (username === "admin" && password === "123456") {
-      return res.status(200).json({ 
+    const listUser = await getListUser();
+    const userLogin = listUser?.find((x) => x.username === username && x.password === password)
+    if (userLogin) {
+      return res.status(200).json({
         token: jwt.sign({
-          username
-        }, 'HRM')
-       });
+          exp: Math.floor(Date.now() / 1000) + (60 * 60),
+          userId: userLogin.id,
+        }, 'secret')
+      });
     } else {
       return res.status(500).json({ message: "Sai thông tin đăng nhập?" });
     }

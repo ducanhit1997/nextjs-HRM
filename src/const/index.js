@@ -1,0 +1,1 @@
+export const API_URL = "https://640615baeed195a99f957fce.mockapi.io/api/hrm"
