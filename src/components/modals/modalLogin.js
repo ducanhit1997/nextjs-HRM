@@ -5,15 +5,18 @@ import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie'
-import { useRouter } from 'next/router'
 import { Alert } from 'react-bootstrap';
-import { Spinner } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import jwt_decode from 'jwt-decode';
+import { saveInfoUserLogin } from '@/store/userReducer';
+import { useRouter } from 'next/router';
 
-function NewUserModal(props) {
+function ModalLogin(props) {
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const router = useRouter();
   const [inValidAccount, setInValidAccount] = useState(false);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const { data } = useSelector((state) => state.userReducer);
 
   const onSubmit = data => {
     const payload = {
@@ -24,14 +27,17 @@ function NewUserModal(props) {
     axios.post(`http://localhost:3000/api/login`, payload)
       .then((response) => {
         Cookies.set('HRM_TOKEN', response.data.token)
+        const tokenPayload = jwt_decode(response.data.token);
+        dispatch(saveInfoUserLogin(tokenPayload));
         setInValidAccount(false)
-        window.location.reload();
+        props.setShowModalNewUser(false)
       })
       .catch((error) => {
         setInValidAccount(true);
       })
       .finally(() => {
         setLoading(false);
+        window.location.reload()
       });
   }
   return (
@@ -85,4 +91,4 @@ function NewUserModal(props) {
     </Modal>
   )
 }
-export default NewUserModal
+export default ModalLogin

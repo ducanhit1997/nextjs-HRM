@@ -3,7 +3,6 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router'
 import { useDispatch } from 'react-redux';
 import { editEmployeeRequest } from '../../store/employeeReducer';
 import { addEmployee } from '../../services/api/employee';

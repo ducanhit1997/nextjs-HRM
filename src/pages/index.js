@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Layout from "../components/layout";
-import Cookies from 'js-cookie'
 
-export default function Home() {
-  const [isLogin, setIsLogin] = useState(false);
-
-  useEffect(() => {
-    const hasToken = Cookies.get('HRM_TOKEN')
-    setIsLogin(hasToken)
-  }, [])
+export default function Home(props) {
 
   return (
     <>
@@ -19,7 +12,7 @@ export default function Home() {
           Phần mềm quản lý nhân viên
         </h1>
         <h4>Thực hiện: Nguyễn Văn A</h4>
-        {isLogin ? <Link href="/employees">Truy cập</Link> : 'Vui lòng login để truy cập'}
+        <Link href="/employees">Truy cập</Link>
       </div>
     </>
   );

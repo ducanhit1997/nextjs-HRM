@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Layout from "../../components/layout"
 import { getListEmployeeRequest } from "../../store/employeeReducer";
-import { Button, Space, Table, Tag } from 'antd';
+import { Button, Space, Table, Alert } from 'antd';
 import ModalEmployee from "../../components/modals/modalEmployee";
 import ConfirmDeleteModal from "../../components/modals/confirmDelete";
+import Cookies from "js-cookie";
 
 function Employees(props) {
   const dispatch = useDispatch();
@@ -12,6 +13,7 @@ function Employees(props) {
   const [showModalEmployee, setShowModalEmployee] = useState(false);
   const [showModalConfirm, setShowModalConfirm] = useState(false);
   const [recordData, setRecordData] = useState();
+  const hasToken = Cookies.get('HRM_TOKEN')
 
   useEffect(() => {
     dispatch(getListEmployeeRequest());
@@ -56,22 +58,27 @@ function Employees(props) {
   ];
 
   return (
-    <Layout secure>
+    <Layout>
       <div className="container">
-        <Button onClick={() => openModalNewOrEdit()}>Add new user</Button>
-        <Table columns={columns} dataSource={data} className="mt-3" />
-        <ModalEmployee
-          show={showModalEmployee}
-          onHide={() => setShowModalEmployee(false)}
-          data={recordData}
-        />
-        <ConfirmDeleteModal
-          show={showModalConfirm}
-          onHide={() => setShowModalConfirm(false)}
-          id={recordData?.id}
-          name={recordData?.name}
-          setShowModalConfirm={setShowModalConfirm}
-        />
+        {hasToken ?
+          <>
+            <Button onClick={() => openModalNewOrEdit()}>Add new user</Button>
+            <Table columns={columns} dataSource={data} className="mt-3" />
+            <ModalEmployee
+              show={showModalEmployee}
+              onHide={() => setShowModalEmployee(false)}
+              data={recordData}
+            />
+            <ConfirmDeleteModal
+              show={showModalConfirm}
+              onHide={() => setShowModalConfirm(false)}
+              id={recordData?.id}
+              name={recordData?.name}
+              setShowModalConfirm={setShowModalConfirm}
+            />
+          </> :
+          <Alert message="Bạn cần đăng nhập để có thể xem" type="warning" className="mt-5" />
+          }
       </div>
     </Layout>
   )

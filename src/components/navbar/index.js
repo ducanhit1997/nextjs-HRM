@@ -3,12 +3,14 @@ import Cookies from 'js-cookie'
 import Nav from 'react-bootstrap/Nav';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Button from 'react-bootstrap/Button';
-import NewUserModal from "../../components/modals/newUser";
+import ModalLogin from "../modals/modalLogin";
 import Link from "next/link";
+import { useRouter } from 'next/router'
 
 function Navbar() {
   const [showModalNewUser, setShowModalNewUser] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const hasToken = Cookies.get('HRM_TOKEN')
@@ -18,6 +20,7 @@ function Navbar() {
   const onLogout = () => {
     Cookies.remove('HRM_TOKEN')
     setIsLogin(false)
+    router.push("/")
   }
 
   return (
@@ -45,9 +48,10 @@ function Navbar() {
           </Nav.Item>
         }
       </Nav>
-      <NewUserModal
+      <ModalLogin
         show={showModalNewUser}
         onHide={() => setShowModalNewUser(false)}
+        setShowModalNewUser={setShowModalNewUser}
       />
     </div>
   )

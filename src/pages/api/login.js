@@ -25,6 +25,9 @@ export default async function handler(
         token: jwt.sign({
           exp: Math.floor(Date.now() / 1000) + (60 * 60),
           userId: userLogin.id,
+          username: userLogin.username,
+          address: userLogin.address,
+          phoneNumber: userLogin.phoneNumber
         }, 'secret')
       });
     } else {
