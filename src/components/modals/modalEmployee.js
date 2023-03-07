@@ -3,20 +3,14 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import Cookies from 'js-cookie'
 import { useRouter } from 'next/router'
-import { Alert } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { editEmployeeRequest } from '../../store/employeeReducer';
 import { addEmployee } from '../../services/api/employee';
 
 function ModalEmployee(props) {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm();
-  const router = useRouter();
-  const [inValidAccount, setInValidAccount] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const { data, setIsSaveSuccess } = props;
+  const { data } = props;
   const dispatch = useDispatch();
 
   const onSubmit = values => {

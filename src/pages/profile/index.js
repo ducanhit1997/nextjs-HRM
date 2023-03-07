@@ -3,7 +3,6 @@ import Card from 'react-bootstrap/Card';
 import { Alert, Button, Form, Spinner } from "react-bootstrap";
 import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
-import { useRouter } from "next/router";
 import { API_URL } from '../../const/index'
 import axios from "axios";
 import jwt_decode from 'jwt-decode';
@@ -11,8 +10,7 @@ import jwt_decode from 'jwt-decode';
 import Cookies from "js-cookie";
 
 function Profile(props) {
-  const { register, handleSubmit, clearErrors, formState: { errors } } = useForm();
-  const router = useRouter();
+  const { register, handleSubmit, clearErrors, setValue, formState: { errors } } = useForm();
   const [inValidAccount, setInValidAccount] = useState(false);
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState();
@@ -62,6 +60,14 @@ function Profile(props) {
     }
   }, [])
 
+  useEffect(() => {
+    if(userData) {
+      setValue('username', userData.username);
+      setValue('address', userData.address);
+      setValue('phoneNumber', userData.phoneNumber);
+    }
+  }, [userData])
+
 
   return (
     <Layout>
@@ -80,7 +86,6 @@ function Profile(props) {
                 <Form.Control
                   type="text"
                   {...register("username", { required: true })}
-                  defaultValue={userData?.username}
                 />
                 {errors.username && errors.username.type === "required" && (
                   <small className='text-danger'>
@@ -93,7 +98,6 @@ function Profile(props) {
                 <Form.Control
                   type="text"
                   {...register("address", { required: true })}
-                  defaultValue={userData?.address}
                 />
                 {errors.address && errors.address.type === "required" && (
                   <small className='text-danger'>
@@ -107,7 +111,6 @@ function Profile(props) {
                 <Form.Control
                   type="number"
                   {...register("phoneNumber", { required: true })}
-                  defaultValue={userData?.phoneNumber}
                 />
                 {errors.phoneNumber && errors.phoneNumber.type === "required" && (
                   <small className='text-danger'>

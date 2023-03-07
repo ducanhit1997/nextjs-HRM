@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getlistEmployee, editEmployee, addEmployee } from "../services/api/employee";
+import { getlistEmployee, editEmployee, addEmployee, deleteEmployee } from "../services/api/employee";
 
 export const getListEmployeeRequest = createAsyncThunk(
   "employee/GET_LIST",
@@ -30,6 +30,18 @@ export const addEmployeeRequest = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const res = await addEmployee(payload);
+      return res;
+    } catch (error) {
+      return rejectWithValue(error.data);
+    }
+  }
+);
+
+export const deleteEmployeeRequest = createAsyncThunk(
+  "employee/DELETE",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const res = await deleteEmployee(payload);
       return res;
     } catch (error) {
       return rejectWithValue(error.data);
@@ -84,6 +96,17 @@ const employeeSlice = createSlice({
       state.data = action?.payload || [];
       state.loading = false;
       state.editSuccess = true;
+    },
+
+    [deleteEmployeeRequest.pending]: (state) => {
+      state.loading = true;
+    },
+    [deleteEmployeeRequest.rejected]: (state, action) => {
+      state.loading = false;
+    },
+    [deleteEmployeeRequest.fulfilled]: (state, action) => {
+      state.data = action?.payload || [];
+      state.loading = false;
     },
   },
 });

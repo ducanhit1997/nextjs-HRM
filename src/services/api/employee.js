@@ -33,3 +33,14 @@ export const addEmployee = async (payload) => {
         return [];
       })
 };
+
+export const deleteEmployee = async (id) => {
+  return await
+    axios.delete(`${API_URL}/employees/${id}`,)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => {
+        return [];
+      })
+};
