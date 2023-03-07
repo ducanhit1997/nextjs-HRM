@@ -1,11 +1,6 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
 import { API_URL } from '../../const/index'
-
-type Data = {
-  message: string;
-};
 
 const getListUser = () => {
   return axios.get(`${API_URL}/users`)
@@ -18,8 +13,8 @@ const getListUser = () => {
 }
 
 export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
+  req,
+  res
 ) {
   if (req.method === "POST") {
     const { username, password } = req.body;
